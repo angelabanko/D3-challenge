@@ -69,40 +69,6 @@ function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup, textGroup) {
     } else {
         var ylabel = "Obesity: "
     }
-    // Define tooltip.
-    var toolTip = d3.tip()
-        .offset([120, -60])
-        .attr("class", "tooltip")
-        .html(function(d) {
-            if (chosenXAxis === "age") {
-                // All yAxis tooltip labels presented and formated as %.
-                // Display Age without format for xAxis.
-                return (`${d.state}<hr>${xlabel} ${d[chosenXAxis]}<br>${ylabel}${d[chosenYAxis]}%`);
-                } else if (chosenXAxis !== "poverty" && chosenXAxis !== "age") {
-                // Display Income in dollars for xAxis.
-                return (`${d.state}<hr>${xlabel}$${d[chosenXAxis]}<br>${ylabel}${d[chosenYAxis]}%`);
-                } else {
-                // Display Poverty as percentage for xAxis.
-                return (`${d.state}<hr>${xlabel}${d[chosenXAxis]}%<br>${ylabel}${d[chosenYAxis]}%`);
-                }      
-        });
-    circlesGroup.call(toolTip);
-    // Create "mouseover" event listener to display tool tip.
-    circlesGroup
-        .on("mouseover", function(data) {
-            toolTip.show(data, this);
-        })
-        .on("mouseout", function(data) {
-            toolTip.hide(data);
-        });
-    textGroup
-        .on("mouseover", function(data) {
-            toolTip.show(data, this);
-        })
-        .on("mouseout", function(data) {
-            toolTip.hide(data);
-        });
-    return circlesGroup;
 }
 function makeResponsive() {
     // Select div by id.
@@ -180,13 +146,13 @@ function makeResponsive() {
         var circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circle, circleText);
             //Add x label groups and labels.
         var xLabelsGroup = chartGroup.append("g")
-            .attr("transform", "translate(${chartWidth / 2}, ${chartHeight + 20})");
+            .attr("transform", `translate(${chartWidth / 2}, ${chartHeight + 20})`);
         var povertyLabel = xLabelsGroup.append("text")
             .attr("x", 0)
             .attr("y", 20)
             .attr("value", "poverty") // value to grab for event listener
             .classed("active", true)
-            .text("In Poverty (%)");
+            .text("In Poverty (%)")
         var ageLabel = xLabelsGroup.append("text")
             .attr("x", 0)
             .attr("y", 40)
@@ -319,9 +285,11 @@ function makeResponsive() {
                 // Update tool tips with new info.
                 circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circle, circleText);
             });
+            
     }).catch(function(err) {
         console.log(err);
     });
+    
 }
 makeResponsive();
 // Event listener for window resize.
