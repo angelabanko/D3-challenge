@@ -37,7 +37,7 @@ function renderYAxes(newYScale, yAxis) {
 }
 // Function used for updating circles group with a transition to new circles.
 function renderCircles(circlesGroup, newXScale, newYScale, chosenXAxis, chosenYAxis) {
-    circlesGroup.transition()
+    circlesGroup.transition
         .duration(1000)
         .attr("cx", d => newXScale(d[chosenXAxis]))
         .attr("cy", d => newYScale(d[chosenYAxis]));
@@ -45,7 +45,7 @@ function renderCircles(circlesGroup, newXScale, newYScale, chosenXAxis, chosenYA
 }
 // Function used for updating text in circles group with a transition to new text.
 function renderText(circletextGroup, newXScale, newYScale, chosenXAxis, chosenYAxis) {
-    circletextGroup.transition()
+    circletextGroup.transition
         .duration(1000)
         .attr("x", d => newXScale(d[chosenXAxis]))
         .attr("y", d => newYScale(d[chosenYAxis]));
@@ -285,11 +285,106 @@ function makeResponsive() {
                 // Update tool tips with new info.
                 circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circle, circleText);
             });
-            
+            xLabelsGroup.selectAll("text")
+            .on("click", function() {
+                var value = d3.select(this).attr("value");
+                if (value !== chosenXAxis)          
+                // Grab selected label.
+                chosenXAxis = d3.select(this).attr("value");
+                // Update xLinearScale.
+                xLinearScale = xScale(demoData, chosenXAxis, chartWidth);
+                // Render xAxis.
+                xAxis = renderXAxes(xLinearScale, xAxis);
+                // Update circles with new x values.
+                circle = renderCircles(circlesGroup, xLinearScale, yLinearScale, chosenXAxis, chosenYAxis);
+                // Update tool tips with new info.
+                circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circle, circleText);
+                // Update circles text with new values.
+                circleText = renderText(circleText, xLinearScale, yLinearScale, chosenXAxis, chosenYAxis);
+                // Switch active/inactive labels.
+                if (chosenXAxis === "poverty") {
+                    povertyLabel
+                        .classed("active", true)
+                        .classed("inactive", false);
+                    ageLabel
+                        .classed("active", false)
+                        .classed("inactive", true);
+                    incomeLabel
+                        .classed("active", false)
+                        .classed("inactive", true);
+                } else if (chosenXAxis === "age") {
+                    povertyLabel
+                        .classed("active", false)
+                        .classed("inactive", true);
+                    ageLabel
+                        .classed("active", true)
+                        .classed("inactive", false);
+                    incomeLabel
+                        .classed("active", false)
+                        .classed("inactive", true);
+                } else {
+                    povertyLabel
+                        .classed("active", false)
+                        .classed("inactive", true);
+                    ageLabel
+                        .classed("active", false)
+                        .classed("inactive", true)
+                    incomeLabel
+                        .classed("active", true)
+                        .classed("inactive", false);
+                }
+            });
+            // Y Labels event listener.
+            yLabelsGroup.selectAll("text")
+                .on("click", function() {
+                    // Grab selected label.
+                    chosenYAxis = d3.select(this).attr("value");
+                    // Update yLinearScale.
+                    yLinearScale = yScale(demoData, chosenYAxis, chartHeight);
+                    // Update yAxis.
+                    yAxis = renderYAxes(yLinearScale, yAxis);
+                    // Changes classes to change bold text.
+                    if (chosenYAxis === "healthcare") {
+                        healthcareLabel
+                            .classed("active", true)
+                            .classed("inactive", false);
+                        smokesLabel
+                            .classed("active", false)
+                            .classed("inactive", true);
+                        obeseLabel
+                            .classed("active", false)
+                            .classed("inactive", true);
+                    } else if (chosenYAxis === "smokes"){
+                        healthcareLabel
+                            .classed("active", false)
+                            .classed("inactive", true);
+                        smokesLabel
+                            .classed("active", true)
+                            .classed("inactive", false);
+                        obeseLabel
+                            .classed("active", false)
+                            .classed("inactive", true);
+                    } else {
+                        healthcareLabel
+                            .classed("active", false)
+                            .classed("inactive", true);
+                        smokesLabel
+                            .classed("active", false)
+                            .classed("inactive", true);
+                        obeseLabel
+                            .classed("active", true)
+                            .classed("inactive", false);
+                    }
+                    // Update circles with new y values.
+                    circle = renderCircles(circlesGroup, xLinearScale, yLinearScale, chosenXAxis, chosenYAxis);
+                    // Update circles text with new values.
+                    circleText = renderText(circleText, xLinearScale, yLinearScale, chosenXAxis, chosenYAxis);
+                    // Update tool tips with new info.
+                    circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circle, circleText);
+                });
     }).catch(function(err) {
         console.log(err);
     });
-    
 }
 makeResponsive();
 // Event listener for window resize.
